@@ -1,6 +1,3 @@
-./src/main/java/CelestialObject.java
-./src/main/java/StarMass_test.java
-./src/main/java/Star.java
-./src/main/java/Planet.java
-./src/main/java/Galaxy.java
+./src/main/java/MonthlyPeriod_test.java
+./src/main/java/MonthlyPeriod.java
 ./src/main/java/StopAfterFailureExtension.java
