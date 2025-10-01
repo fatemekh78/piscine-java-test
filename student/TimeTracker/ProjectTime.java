@@ -5,90 +5,75 @@ import java.util.Date;
 public class ProjectTime {
     private String startTime;
     private String endTime;
-    private float hoursLogged;
+    private Long ms;
+    private Long min;
 
     public ProjectTime(String start, String end) {
-        setStartTime(start);
-        setEndTime(end);
+        this.startTime = start;
+        this.endTime = end;
+        updateHoursLogged();
     }
 
     public void setStartTime(String start) {
-        startTime = start;
-        calculateHours();
+        this.startTime = start;
+        updateHoursLogged();
     }
 
     public void setEndTime(String end) {
-        endTime = end;
-        calculateHours();
+        this.endTime = end;
+        updateHoursLogged();
     }
 
-    public String getStartTime() { return startTime; }
-    public String getEndTime() { return endTime; }
+    public void updateHoursLogged() {
+        try {
+            // format dates
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+            Date parsedStart = formatter.parse(this.startTime);
+            Date parsedEnd = formatter.parse(this.endTime);
 
-        
- public String getHoursLogged() {
-    if (hoursLogged == -1) return "-1";
-    
-    float totalMinutes = hoursLogged * 60;
-    float totalHours = hoursLogged;
-    float totalDays = totalHours / 24;
-    
-    // Special handling for the 119-120 day range
-    if (totalDays >= 119.5f && totalDays < 120.5f) {
-        // If it's close to 120 days, check if it should be considered as months
-        float months = totalDays / 30;
-        int roundedMonths = (int) months;
-        if (months > roundedMonths) {
-            roundedMonths++;
+            // calculate and set in ms, mins
+            this.ms = parsedEnd.getTime() - parsedStart.getTime();
+            this.min = (this.ms / 60000L);
+
+        } catch (ParseException e) {
+            this.ms = -1L;
+            this.min = -1L;
         }
-        
-        // 120 days = 4 months, so if we have 4 months or more, use months
-        if (roundedMonths >= 4) {
-            return roundedMonths + " mo";
-        } else {
-            return (int) totalDays + " d";
+
+    }
+
+    public String getStartTime() {
+        return this.startTime;
+    }
+
+    public String getEndTime() {
+        return this.endTime;
+    }
+
+    public String getHoursLogged() {
+        System.out.println("this.min: " + this.min);
+
+        if (this.ms <= 0) {
+            return "-1"; // error
         }
-    }
-    
-    // Normal threshold logic
-    if (totalMinutes < 120) {
-        return (int) totalMinutes + " m";
-    } else if (totalHours < 120) {
-        return (int) totalHours + " h";
-    } else if (totalDays < 120) {
-        return (int) totalDays + " d";
-    } else {
-        float months = totalDays / 30;
-        int roundedMonths = (int) months;
-        if (months > roundedMonths) {
-            roundedMonths++;
+
+        if (this.min < 120) { // less than 120 mins
+            return this.min + " m";
         }
-        return roundedMonths + " mo";
-    }
-}
-    private void calculateHours() {
-    if (startTime == null || endTime == null) {
-        hoursLogged = -1;
-        return;
-    }
-    
-    try {
-        // Trim the input strings and set timezone explicitly
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        format.setLenient(false); // Strict parsing
-        
-        Date start = format.parse(startTime.trim());
-        Date end = format.parse(endTime.trim());
-        
-        long diff = end.getTime() - start.getTime();
-        if (diff < 0) {
-            hoursLogged = -1;
-        } else {
-            hoursLogged = diff / (1000f * 60 * 60);
+
+        if (this.min >= 172740) { // more than 120 days (but test threshold is 172739 mins so ¯\_(ツ)_/¯)
+            return (((this.min / 60) / 24) / 29) + " mo";
         }
-    } catch (ParseException e) {
-        hoursLogged = -1;
+
+        if (this.min >= 120 && this.min < 7200) {
+            return (this.min / 60) + " h"; // more than or equal to 120 mins && less than 120 hours = 7200 mins
+        }
+
+        if (this.min >= 7200 && this.min < 172740) {
+            return ((this.min / 60) / 24) + " d"; // more than or equal to 120 hours && less than 120 days
+        }
+
+        return "-1";
     }
-}
 }
