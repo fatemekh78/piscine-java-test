@@ -56,12 +56,17 @@ public class SingleLinkedList implements LinkedList {
             // Remove head - don't call next() method
             head = head.next;
         } else {
+            Node prev = null;
             Node current = head;
-            for (int i = 0; i < index - 1; i++) {
-                current = next(current); // This MUST call next() for traversal
+            // Move forward index times, calling next() each time (this prints)
+            for (int i = 0; i < index; i++) {
+                prev = current;
+                current = next(current);
             }
-            // Skip the node to remove - don't call next() here
-            current.next = current.next.next;
+            // Unlink the current node
+            if (prev != null) {
+                prev.next = current.next;
+            }
         }
         size--;
     }

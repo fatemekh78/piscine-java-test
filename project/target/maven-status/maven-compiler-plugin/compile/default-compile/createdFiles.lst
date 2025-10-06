@@ -1,5 +1,5 @@
-SingleLinkedListTest.class
-SingleLinkedList$Node.class
-SingleLinkedList.class
+DoubleLinkedListTest.class
+DoubleLinkedList$Node.class
+DoubleLinkedList.class
 StopAfterFailureExtension.class
 LinkedList.class
